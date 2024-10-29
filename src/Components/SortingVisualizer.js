@@ -4,9 +4,15 @@ import { useState, useEffect, useCallback } from "react";
 import ArrayBar from "./ArrayBar";
 import "./ArrayBar.css";
 
+//importing algorithms from the algorithms folder
+import { BubbleSort } from "../Algorithms/BubbleSort";
+import { JavaScriptSort } from "../Algorithms/JavascriptSort";
+
 const SortingVisualizer = () => {
   const [array, setArray] = useState([]);
   const [comparisonIndices, setComparisonIndices] = useState([]);
+  const [isSorted, setIsSorted] = useState(false);
+  const [isSorting, setIsSorting] = useState(false);
 
   const randomIntFromInterval = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -14,10 +20,11 @@ const SortingVisualizer = () => {
 
   const generateArray = useCallback(() => {
     const array = [];
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 50; i++) {
       array.push(randomIntFromInterval(5, 750));
     }
     setArray(array);
+    setIsSorted(false);
     setComparisonIndices([]); // just for safety, empties the compared indices
   }, []);
 
@@ -25,30 +32,17 @@ const SortingVisualizer = () => {
     generateArray();
   }, [generateArray]);
 
-  const JavaScriptSort = () => {
-    const jsSortedArray = array.slice().sort((a, b) => a - b); //creates a copy of the array, sorts it and stores it in jsSortedArray which we then set as the new state
-    setArray(jsSortedArray);
+  const javaScriptSortHandler = () => {
+    setIsSorting(true);
+    JavaScriptSort(setArray, array, setIsSorted);
+    setIsSorting(false);
   };
 
-  const BubbleSort = async () => {
-    const arr = [...array];
+  const bubbleSortHandler = async () => {
+    setIsSorting(true);
 
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = 0; j < arr.length - i - 1; j++) {
-        // set the comparison indices, so we can change their color.
-        setComparisonIndices([j, j + 1]);
-
-        // Allow the UI to update by creating a delay
-        await new Promise((resolve) => setTimeout(resolve, 1));
-
-        if (arr[j] > arr[j + 1]) {
-          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-          setArray([...arr]);
-        }
-        setComparisonIndices([]);
-      }
-    }
-    setArray(arr);
+    await BubbleSort(array, setArray, setComparisonIndices, setIsSorted);
+    setIsSorting(false);
   };
 
   return (
@@ -57,20 +51,23 @@ const SortingVisualizer = () => {
         <button
           className="bg-sky-600 hover:bg-sky-700 text-white font-semibold transition ease-in-out p-4 rounded-lg mx-2"
           onClick={generateArray}
+          disabled={isSorting}
         >
           Generate New Array
         </button>
 
         <button
           className="bg-sky-600 hover:bg-sky-700 text-white font-semibold transition ease-in-out p-4 rounded-lg mx-2"
-          onClick={JavaScriptSort}
+          onClick={javaScriptSortHandler}
+          disabled={isSorted || isSorting}
         >
           JavaScript Sort
         </button>
 
         <button
           className="bg-sky-600 hover:bg-sky-700 text-white font-semibold transition ease-in-out p-4 rounded-lg mx-2"
-          onClick={BubbleSort}
+          onClick={bubbleSortHandler}
+          disabled={isSorted || isSorting}
         >
           Bubble Sort
         </button>
@@ -81,6 +78,7 @@ const SortingVisualizer = () => {
             key={index}
             value={value}
             color={comparisonIndices.includes(index) ? "red" : "blue"}
+            isSorted={isSorted}
           />
         ))}
       </div>

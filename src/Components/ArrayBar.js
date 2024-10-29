@@ -1,8 +1,11 @@
 const ArrayBar = (props) => {
   return (
     <div
-      className="array-bar bg-blue-700 mx-1"
-      style={{ height: `${props.value}px`, backgroundColor: props.color }}
+      className="array-bar mx-1"
+      style={{
+        height: `${props.value}px`,
+        backgroundColor: props.isSorted ? "green" : props.color, // Conditional background color
+      }}
     ></div>
   );
 };

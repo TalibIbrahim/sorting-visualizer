@@ -72,6 +72,7 @@ const SortingVisualizer = () => {
             className="p-2 mx-2"
             placeholder="Array Size"
             ref={sizeInputRef}
+            disabled={isSorting}
           />
           <input
             type="number"

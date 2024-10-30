@@ -2,7 +2,8 @@ export const BubbleSort = async (
   array,
   setArray,
   setComparisonIndices,
-  setIsSorted
+  setIsSorted,
+  delayInputRef
 ) => {
   const arr = [...array];
 
@@ -12,7 +13,10 @@ export const BubbleSort = async (
       setComparisonIndices([j, j + 1]);
 
       // Allow the UI to update by creating a delay
-      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const delay = parseInt(delayInputRef.current.value) || 0;
+
+      await new Promise((resolve) => setTimeout(resolve, delay));
 
       if (arr[j] > arr[j + 1]) {
         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];

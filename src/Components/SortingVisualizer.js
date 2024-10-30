@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 import ArrayBar from "./ArrayBar";
 import "./ArrayBar.css";
@@ -14,13 +14,17 @@ const SortingVisualizer = () => {
   const [isSorted, setIsSorted] = useState(false);
   const [isSorting, setIsSorting] = useState(false);
 
+  const sizeInputRef = useRef();
+  const delayInputRef = useRef();
+
   const randomIntFromInterval = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
 
   const generateArray = useCallback(() => {
     const array = [];
-    for (let i = 0; i < 50; i++) {
+    const size = parseInt(sizeInputRef.current.value) || 200;
+    for (let i = 0; i < size; i++) {
       array.push(randomIntFromInterval(5, 750));
     }
     setArray(array);
@@ -41,7 +45,13 @@ const SortingVisualizer = () => {
   const bubbleSortHandler = async () => {
     setIsSorting(true);
 
-    await BubbleSort(array, setArray, setComparisonIndices, setIsSorted);
+    await BubbleSort(
+      array,
+      setArray,
+      setComparisonIndices,
+      setIsSorted,
+      delayInputRef
+    );
     setIsSorting(false);
   };
 
@@ -55,6 +65,21 @@ const SortingVisualizer = () => {
         >
           Generate New Array
         </button>
+
+        <div>
+          <input
+            type="number"
+            className="p-2 mx-2"
+            placeholder="Array Size"
+            ref={sizeInputRef}
+          />
+          <input
+            type="number"
+            className="p-2 mx-2"
+            placeholder="Delay in ms"
+            ref={delayInputRef}
+          />
+        </div>
 
         <button
           className="bg-sky-600 hover:bg-sky-700 text-white font-semibold transition ease-in-out p-4 rounded-lg mx-2"
